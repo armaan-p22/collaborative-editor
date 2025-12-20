@@ -14,6 +14,15 @@ const ydoc = new Y.Doc()
 const provider = new WebsocketProvider('ws://localhost:1234', ROOM_NAME, ydoc)
 const persistence = new IndexeddbPersistence(ROOM_NAME, ydoc)
 
+const adjectives = ['Happy', 'Cool', 'Swift', 'Chill', 'Brave', 'Smart', 'Wild']
+const animals = ['Panda', 'Tiger', 'Eagle', 'Badger', 'Fox', 'Koala', 'Hawk']
+const getRandomElement = (list) => list[Math.floor(Math.random() * list.length)]
+const getRandomColor = () => '#' + Math.floor(Math.random()*16777215).toString(16)
+
+const getRandomName = () => {
+  return `${getRandomElement(adjectives)} ${getRandomElement(animals)}`
+}
+
 const TiptapEditor = () => {
   const [status, setStatus] = useState('connecting...')
 
@@ -38,7 +47,10 @@ const TiptapEditor = () => {
       Collaboration.configure({ document: ydoc }), // Now uses the correct extension
       CollaborationCursor.configure({              // Now completely safe to use
         provider: provider,
-        user: { name: 'User', color: '#f783ac' },
+        user: { 
+          name: getRandomName(), 
+          color: getRandomColor()
+        },
       }),
     ],
   })
@@ -63,6 +75,6 @@ export default function App() {
   return (
     <div className="app-container">
       <TiptapEditor />
-      </div>
+    </div>
   )
 }
