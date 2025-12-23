@@ -1,4 +1,5 @@
 import './App.css'
+import Toolbar from './Toolbar.jsx'
 import { useEffect, useState } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -7,6 +8,12 @@ import CollaborationCursor from '@tiptap/extension-collaboration-cursor'
 import * as Y from 'yjs'
 import { WebsocketProvider } from 'y-websocket'
 import { IndexeddbPersistence } from 'y-indexeddb'
+import Highlight from '@tiptap/extension-highlight'
+import Underline from '@tiptap/extension-underline'
+import { LineHeight } from './extensions/LineHeight'
+import { FontSize } from './extensions/FontSize'
+import TextStyle from '@tiptap/extension-text-style'
+import FontFamily from '@tiptap/extension-font-family'
 
 const ROOM_NAME = 'my-collaborative-doc-v1'
 
@@ -43,15 +50,28 @@ const TiptapEditor = () => {
 
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({ history: false }),
-      Collaboration.configure({ document: ydoc }), // Now uses the correct extension
-      CollaborationCursor.configure({              // Now completely safe to use
+      StarterKit.configure({ 
+        history: false,
+        blockquote: {
+          HTMLAttributes: {
+            class: 'border-l-4 border-gray-300 pl-4 italic',
+          },
+        }, 
+      }),
+      Collaboration.configure({ document: ydoc }),
+      CollaborationCursor.configure({              
         provider: provider,
         user: { 
           name: getRandomName(), 
           color: getRandomColor()
         },
       }),
+      Highlight,
+      Underline,
+      LineHeight,
+      TextStyle,
+      FontFamily,
+      FontSize,
     ],
   })
 
@@ -65,6 +85,7 @@ const TiptapEditor = () => {
       </div>
 
       <div className="editor-content">
+        <Toolbar editor={editor} />
         <EditorContent editor={editor} />
       </div>
     </div>

@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* APP LAYOUT & STRUCTURE */
 .app-container {
   @apply min-h-screen bg-gray-50 p-8;
 }
@@ -17,17 +18,50 @@
   @apply text-xl font-bold text-gray-800;
 }
 
-/* Status badges */
+/* STATUS INDICATORS */
 .status-badge {
   @apply px-2 py-1 rounded text-xs;
 }
+
 .status-connected {
   @apply bg-green-100 text-green-700;
 }
+
 .status-disconnected {
   @apply bg-yellow-100 text-yellow-700;
 }
 
+/* TOOLBAR STYLES */
+.toolbar-container {
+  @apply flex flex-wrap gap-2 mb-4 border-b pb-2 items-center sticky top-0 bg-white z-10;
+}
+
+.toolbar-btn,
+.toolbar-select {
+  @apply rounded border bg-gray-100 text-black hover:bg-gray-200 transition-colors cursor-pointer;
+}
+
+.toolbar-btn {
+  @apply px-3 py-1;
+}
+
+.toolbar-select {
+  @apply px-2 py-1 h-8 outline-none text-sm font-medium w-auto min-w-[100px];
+}
+
+.toolbar-btn-active {
+  @apply bg-black text-white border-black hover:bg-gray-800;
+}
+
+.toolbar-separator {
+  @apply w-[1px] h-6 bg-gray-300 mx-1;
+}
+
+.toolbar-btn-clear {
+  @apply text-red-500 border-red-200 hover:text-red-700 hover:bg-red-50 hover:border-red-300;
+}
+
+/* EDITOR CONTENT & TYPOGRAPHY */
 .editor-content {
   @apply prose prose-lg max-w-none min-h-[300px] outline-none p-4 border border-gray-100 rounded;
 }
@@ -36,6 +70,26 @@
   @apply outline-none;
 }
 
+.ProseMirror mark {
+  @apply bg-yellow-200 text-black px-1 rounded;
+}
+
+/* Custom Spacing (Single Spacing look) */
+.editor-content p {
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
+  line-height: 1.2;
+}
+
+.editor-content h1, 
+.editor-content h2, 
+.editor-content h3 {
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  line-height: 1.2;
+}
+
+/* COLLABORATION (Cursors) */
 .collaboration-cursor__caret {
   border-left: 1px solid #0d0d0d;
   border-right: 1px solid #0d0d0d;
