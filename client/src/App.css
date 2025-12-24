@@ -114,3 +114,11 @@
   user-select: none;
   white-space: nowrap;
 }
+
+.back-btn {
+  @apply text-gray-500 hover:text-black text-sm font-medium transition-colors;
+}
+
+.home-card {
+  @apply bg-white p-8 rounded-lg shadow-lg text-center w-96;
+}
