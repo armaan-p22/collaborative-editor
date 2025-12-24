@@ -2,6 +2,7 @@
 import './App.css'
 import Toolbar from './Toolbar.jsx'
 import Home from './Home.jsx'
+import EditorHeader from './components/EditorHeader.jsx'
 import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, useParams, useNavigate } from 'react-router-dom'
 
@@ -26,11 +27,35 @@ import FontFamily from '@tiptap/extension-font-family'
 const adjectives = ['Happy', 'Cool', 'Swift', 'Chill', 'Brave', 'Smart', 'Wild']
 const animals = ['Panda', 'Tiger', 'Eagle', 'Badger', 'Fox', 'Koala', 'Hawk']
 const getRandomElement = (list) => list[Math.floor(Math.random() * list.length)]
-const getRandomColor = () => '#' + Math.floor(Math.random()*16777215).toString(16)
+const userColors = [
+  '#2563EB',
+  '#DC2626', 
+  '#D97706', 
+  '#059669', 
+  '#7C3AED', 
+  '#DB2777', 
+  '#EA580C', 
+  '#0891B2', 
+  '#4F46E5', 
+  '#16A34A', 
+]
+const getRandomColor = () => getRandomElement(userColors)
 
-const getRandomName = () => {
-  return `${getRandomElement(adjectives)} ${getRandomElement(animals)}`
+const getUser = () => {
+  const savedUser = localStorage.getItem('editor-user')
+  if (savedUser) {
+    return JSON.parse(savedUser)
+  }
+
+  const newUser = {
+    name: `${getRandomElement(adjectives)} ${getRandomElement(animals)}`,
+    color: getRandomColor()
+  }
+  localStorage.setItem('editor-user', JSON.stringify(newUser))
+  return newUser
 }
+
+const currentUser = getUser()
 
 /* Main Editor Component */
 const TiptapEditor = () => {
@@ -81,8 +106,8 @@ const TiptapEditor = () => {
       editorSetup ? CollaborationCursor.configure({               
         provider: editorSetup.provider,
         user: { 
-          name: getRandomName(), 
-          color: getRandomColor()
+          name: currentUser.name, 
+          color: currentUser.color
         },
       }) : undefined,
       /* Formatting Extensions */
@@ -107,17 +132,12 @@ const TiptapEditor = () => {
   /* Render Editor UI */
   return (
     <div className="editor-card">
-      <div className="editor-header">
-        <div className="flex items-center gap-4">
-          <button onClick={() => navigate('/')} className="back-btn">
-            ← Back
-          </button>
-          <h1 className="editor-title">Document: {roomID.slice(0, 8)}...</h1>
-        </div>
-        <span className={`status-badge ${status === 'connected' ? 'status-connected' : 'status-disconnected'}`}>
-          {status}
-        </span>
-      </div>
+      <EditorHeader 
+        roomID={roomID} 
+        status={status} 
+        onBack={() => navigate('/')} 
+        provider={editorSetup ? editorSetup.provider : null}
+      />
 
       <div className="editor-content">
         <Toolbar editor={editor} />
