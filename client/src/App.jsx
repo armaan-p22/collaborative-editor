@@ -57,6 +57,20 @@ const getUser = () => {
 
 const currentUser = getUser()
 
+const addToRecentDocuments = (id) => {
+  const exisiting = JSON.parse(localStorage.getItem('recent-docs') || '[]')
+
+  // create a new entry
+  const newEntry = {
+    id,
+    lastOpened: new Date().toLocaleString()
+  }
+
+  const filtered = exisiting.filter(doc => doc.id !== id)
+  const updated = [newEntry, ...filtered].slice(0,10)
+  localStorage.setItem('recent-docs', JSON.stringify(updated))
+}
+
 /* Main Editor Component */
 const TiptapEditor = () => {
   const { id: roomID } = useParams()
@@ -67,6 +81,8 @@ const TiptapEditor = () => {
 
   /* Setup Yjs Provider & WebSocket connection */
   useEffect(() => {
+    // save to history
+    addToRecentDocuments(roomID)
     /* Create fresh Yjs document and provider */
     const newYdoc = new Y.Doc()
     const newProvider = new WebsocketProvider('ws://localhost:1234', roomID, newYdoc)

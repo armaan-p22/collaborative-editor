@@ -49,6 +49,31 @@
   @apply outline-none;
 }
 
+/* CUSTOM OVERRIDES (THE FIX) */
+.editor-content p,
+.editor-content h1,
+.editor-content h2,
+.editor-content h3,
+.editor-content h4,
+.editor-content h5,
+.editor-content h6,
+.editor-content span,
+.editor-content div {
+  line-height: 1;
+}
+
+.editor-content p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.editor-content h1, 
+.editor-content h2, 
+.editor-content h3 {
+  margin-top: 0.8em;
+  margin-bottom: 0.4em;
+}
+
 /* Cursor Highlights */
 .collaboration-cursor__caret {
   border-left: 1px solid #0d0d0d;
