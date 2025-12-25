@@ -60,9 +60,12 @@ const currentUser = getUser()
 const addToRecentDocuments = (id) => {
   const exisiting = JSON.parse(localStorage.getItem('recent-docs') || '[]')
 
+  const oldEntry = exisiting.find(doc => doc.id === id)
+
   // create a new entry
   const newEntry = {
     id,
+    title: oldEntry ? oldEntry.title : 'Untitled Document',
     lastOpened: new Date().toLocaleString()
   }
 
@@ -153,6 +156,7 @@ const TiptapEditor = () => {
         status={status} 
         onBack={() => navigate('/')} 
         provider={editorSetup ? editorSetup.provider : null}
+        ydoc={editorSetup ? editorSetup.ydoc : null}
       />
 
       <div className="editor-content">

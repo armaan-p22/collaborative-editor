@@ -40,7 +40,6 @@ export default function Home() {
         <div className="min-h-screen bg-gray-50 flex flex-col items-center py-20 px-4">
             <h1 className="text-4xl font-bold mb-10 text-gray-800"> 📝 Docs Clone</h1>
             
-            {/* Create / Join Section (Kept narrow) */}
             <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
                 
                 <button
@@ -105,8 +104,11 @@ export default function Home() {
                                     className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between h-32 group"
                                 >
                                     <div className="overflow-hidden">
-                                        <div className="font-medium text-gray-800 group-hover:text-blue-600 transition-colors truncate text-sm mb-2" title={doc.id}>
-                                            📄 Doc: {doc.id.slice(0, 8)}...
+                                        <div className="font-medium text-gray-800 group-hover:text-blue-600 transition-colors truncate text-base mb-1" title={doc.title || 'Untitled Document'}>
+                                            {doc.title || 'Untitled Document'}
+                                        </div>
+                                        <div className="text-xs text-gray-400 truncate">
+                                            ID: {doc.id.slice(0, 8)}...
                                         </div>
                                         <div className="text-xs text-gray-400">
                                             {doc.lastOpened}
