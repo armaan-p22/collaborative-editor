@@ -1,18 +1,22 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-/* APP LAYOUT & STRUCTURE */
-.app-container {
-  @apply min-h-screen bg-gray-50 p-8;
-}
-
 .editor-card {
-  @apply max-w-4xl mx-auto mt-10 p-6 border rounded-lg shadow-lg bg-white;
+  width: 816px;
+  min-height: 1056px;  
+  margin: 3rem auto;  
+  background-color: white;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 
+              0 2px 4px -1px rgba(0, 0, 0, 0.06),
+              0 0 0 1px rgba(0, 0, 0, 0.05);
+  padding: 1in;   
+  border-radius: 2px;
 }
 
 /* TOOLBAR STYLES */
 .toolbar-container {
-  @apply flex flex-wrap gap-2 mb-4 border-b pb-2 items-center sticky top-0 bg-white z-10;
+  @apply flex flex-wrap gap-2 pb-2 items-center bg-white;
+  width: 100%;
 }
 
 .toolbar-btn,
@@ -40,16 +44,23 @@
   @apply text-red-500 border-red-200 hover:text-red-700 hover:bg-red-50 hover:border-red-300;
 }
 
-/* EDITOR CONTENT*/
+/* HEADER STYLES */
+.editor-header {
+  @apply flex items-center justify-between mb-2 pt-2;
+}
+
+/* EDITOR CONTENT */
 .editor-content {
-  @apply prose prose-lg max-w-none min-h-[500px] outline-none;
+  @apply prose prose-lg max-w-none outline-none;
+  width: 100%;
 }
 
 .ProseMirror {
   @apply outline-none;
+  min-height: 100%;
 }
 
-/* CUSTOM OVERRIDES (THE FIX) */
+/* CUSTOM OVERRIDES */
 .editor-content p,
 .editor-content h1,
 .editor-content h2,
@@ -100,19 +111,15 @@
 /* Print styles */
 @media print {
   @page {
-    margin: 2cm;
+    margin: 0;
     size: auto;
   }
 
-  body, .app-container {
+  body {
     background: white !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    min-height: auto !important;
-    height: auto !important;
-    overflow: visible !important;
   }
 
+  /* Hide UI */
   .editor-header,
   .toolbar-container, 
   .back-btn,
@@ -120,14 +127,16 @@
     display: none !important;
   }
 
+  /* Reset Card for Print */
   .editor-card {
     border: none !important;
     box-shadow: none !important;
     margin: 0 !important;
-    padding: 0 !important; 
+    padding: 2cm !important; 
     max-width: 100% !important;
     width: 100% !important;
     position: static !important;
+    min-height: 0 !important;
   }
 
   .editor-content {

@@ -150,34 +150,38 @@ const TiptapEditor = () => {
 
   /* Render Editor UI */
   return (
-    <div className="editor-card">
-      <EditorHeader 
-        roomID={roomID} 
-        status={status} 
-        onBack={() => navigate('/')} 
-        provider={editorSetup ? editorSetup.provider : null}
-        ydoc={editorSetup ? editorSetup.ydoc : null}
-        editor={editor}
-      />
+    <div className="flex flex-col h-screen bg-[#F3F4F6]">
+      
+      <div className="bg-white border-b shadow-sm z-50">
+        <div className="max-w-screen-2xl mx-auto px-4">
+          <EditorHeader 
+            roomID={roomID} 
+            status={status} 
+            onBack={() => navigate('/')} 
+            provider={editorSetup.provider}
+            ydoc={editorSetup.ydoc}
+            editor={editor}
+          />
+          <Toolbar editor={editor} />
+        </div>
+      </div>
 
-      <div className="editor-content">
-        <Toolbar editor={editor} />
-        <EditorContent editor={editor} />
+      <div className="flex-1 overflow-y-auto">
+        <div className="editor-card">
+          <EditorContent editor={editor} />
+        </div>
       </div>
     </div>
   )
 }
 
-/* App Entry Point with Routing */
 export default function App() {
   return (
-    <div className="app-container">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/documents/:id" element={<TiptapEditor />} />
-        </Routes>
-      </BrowserRouter>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/documents/:id" element={<TiptapEditor />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
