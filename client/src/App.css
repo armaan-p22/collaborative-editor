@@ -111,20 +111,36 @@
 /* Print styles */
 @media print {
   @page {
-    margin: 0;
+    margin: 2cm;
     size: auto;
   }
 
-  body {
+  body, #root {
+    height: auto !important;
+    overflow: visible !important;
     background: white !important;
   }
 
   /* Hide UI */
   .editor-header,
-  .toolbar-container, 
-  .back-btn,
-  .status-badge {
+  .toolbar-container{
     display: none !important;
+  }
+
+  .print-hide {
+    display: none !important;
+  }
+
+  .print-layout {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .print-scroll-container {
+    height: auto !important;
+    overflow: visible !important;
+    display: block !important;
   }
 
   /* Reset Card for Print */
@@ -132,10 +148,9 @@
     border: none !important;
     box-shadow: none !important;
     margin: 0 !important;
-    padding: 2cm !important; 
+    padding: 0 !important; 
     max-width: 100% !important;
     width: 100% !important;
-    position: static !important;
     min-height: 0 !important;
   }
 

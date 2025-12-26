@@ -150,9 +150,9 @@ const TiptapEditor = () => {
 
   /* Render Editor UI */
   return (
-    <div className="flex flex-col h-screen bg-[#F3F4F6]">
+    <div className="flex flex-col h-screen bg-[#F3F4F6] print-layout">
       
-      <div className="bg-white border-b shadow-sm z-50">
+      <div className="bg-white border-b shadow-sm z-50 print-hide">
         <div className="max-w-screen-2xl mx-auto px-4">
           <EditorHeader 
             roomID={roomID} 
@@ -166,7 +166,7 @@ const TiptapEditor = () => {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto print-scroll-container">
         <div className="editor-card">
           <EditorContent editor={editor} />
         </div>
