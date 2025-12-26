@@ -103,13 +103,19 @@ const EditorHeader = ({ roomID, status, onBack, provider, ydoc, editor }) => {
       <div className="flex items-center gap-4 shrink-0">
         <Avatars provider={provider} />
 
-        <span className={`px-2 py-1 rounded text-xs font-semibold ${
-          status === 'connected' 
-            ? 'bg-green-100 text-green-700' 
-            : 'bg-yellow-100 text-yellow-700'
+        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+          status === 'connected' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-800'
         }`}>
-          {status}
-        </span>
+          
+          <div className={`w-2 h-2 rounded-full ${
+            status === 'connected' ? 'bg-green-500' : 'bg-yellow-600'
+          }`} />
+
+          <span>
+            {status === 'connected' ? 'Saved to Cloud' : 'Working Offline'}
+          </span>
+          
+        </div>
       </div>
     </div>
   )
