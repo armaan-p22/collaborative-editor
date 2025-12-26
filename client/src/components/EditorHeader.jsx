@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import CopyButton from './CopyButton'
 import Avatars from './Avatars'
+import ExportMenu from './ExportMenu'
 
-const EditorHeader = ({ roomID, status, onBack, provider, ydoc }) => {
+const EditorHeader = ({ roomID, status, onBack, provider, ydoc, editor }) => {
   const [title, setTitle] = useState("Loading...")
   const inputRef = useRef(null)
 
@@ -71,8 +72,8 @@ const EditorHeader = ({ roomID, status, onBack, provider, ydoc }) => {
   }
   
   return (
-    <div className="flex items-center justify-between mb-4 border-b pb-2">
-      <div className="flex items-center gap-4 overflow-hidden">
+    <div className="editor-header flex items-center justify-between mb-4 border-b pb-2">
+      <div className="flex items-center gap-4">
         <button 
           onClick={onBack} 
           className="text-gray-500 hover:text-black text-sm font-medium transition-colors shrink-0"
@@ -93,7 +94,10 @@ const EditorHeader = ({ roomID, status, onBack, provider, ydoc }) => {
           </div>
         </div>
 
-        <CopyButton />
+        <div className="flex items-center gap-2">
+           <ExportMenu editor={editor} title={title} />
+           <CopyButton />
+        </div>
       </div>
 
       <div className="flex items-center gap-4 shrink-0">

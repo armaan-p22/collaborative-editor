@@ -157,6 +157,7 @@ const TiptapEditor = () => {
         onBack={() => navigate('/')} 
         provider={editorSetup ? editorSetup.provider : null}
         ydoc={editorSetup ? editorSetup.ydoc : null}
+        editor={editor}
       />
 
       <div className="editor-content">

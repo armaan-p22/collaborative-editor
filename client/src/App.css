@@ -96,3 +96,49 @@
   user-select: none;
   white-space: nowrap;
 }
+
+/* Print styles */
+@media print {
+  @page {
+    margin: 2cm;
+    size: auto;
+  }
+
+  body, .app-container {
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    min-height: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .editor-header,
+  .toolbar-container, 
+  .back-btn,
+  .status-badge {
+    display: none !important;
+  }
+
+  .editor-card {
+    border: none !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important; 
+    max-width: 100% !important;
+    width: 100% !important;
+    position: static !important;
+  }
+
+  .editor-content {
+    min-height: 0 !important;
+    color: black !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  p, h1, h2, h3, h4, h5, h6, li {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+}
