@@ -178,3 +178,15 @@
     break-inside: avoid;
   }
 }
+
+/* PDF EXPORT UTILITY */
+.editor-card.pdf-exporting {
+  margin: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.html2pdf__container .editor-card {
+  box-shadow: none !important;
+  margin: 0 !important;
+}

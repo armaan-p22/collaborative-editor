@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { use, useState } from 'react'
+import html2pdf from 'html2pdf.js'
 
 export default function ExportMenu({ editor, title }) {
     const [isOpen, setIsOpen] = useState(false)
+    const [isExporting, setIsExporting] = useState(false)
 
     const handleDownloadText = () => {
         if (!editor) return
@@ -18,13 +20,32 @@ export default function ExportMenu({ editor, title }) {
         window.print()
     }
 
+    const handleDownloadPDF = () => {
+        setIsExporting(true)
+        const element = document.querySelector('.editor-card')
+        element.classList.add('pdf-exporting')
+        const opt = {
+            margin: 0,
+            filename: `${title}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        }
+        html2pdf().set(opt).from(element).save().then(() => {
+            element.classList.remove('pdf-exporting')
+            setIsExporting(false)
+            setIsOpen(false)
+        })
+    }
+
     return (
         <div className="relative inline-block text-left mr-2">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded border border-gray-300 transition-colors"
+                className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded border border-gray-300 transition-colors flex items-center gap-1"
+                disabled={isExporting}
             >
-                Export ▾
+                {isExporting ? '⏳' : 'Export ▾'}
             </button>
 
             {isOpen && (
@@ -34,8 +55,16 @@ export default function ExportMenu({ editor, title }) {
                             onClick={() => { handlePrint(); setIsOpen(false) }}
                             className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         >
-                            🖨️ Print / PDF
+                            🖨️ Print
                         </button>
+
+                        <button
+                            onClick={handleDownloadPDF}
+                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                            📑 Download PDF
+                        </button>
+
                         <button
                             onClick={() => { handleDownloadText(); setIsOpen(false) }}
                             className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
