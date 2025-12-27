@@ -1,15 +1,30 @@
-const WebSocket = require('ws')
+const express = require('express')
 const http = require('http')
+const WebSocket = require('ws')
+const mongoose = require('mongoose')
+const dotenv = require('dotenv')
+const cors = require('cors')
 const { setupWSConnection } = require('y-websocket/bin/utils')
 
-/* Basic HTTP server to check if service is running */
-const server = http.createServer((request, response) => {
-  response.writeHead(200, { 'Content-Type': 'text/plain' })
-  response.end('y-websocket server running')
+/* Configuration */
+dotenv.config() // Load variables from .env file
+const app = express()
+const server = http.createServer(app)
+const wss = new WebSocket.Server({ server })
+
+/* Middleware */
+app.use(cors()) // Allow requests from different ports (frontend)
+app.use(express.json()) // Allow server to parse JSON bodies 
+
+/* Basic Route to check if server is running */
+app.get('/', (req, res) => {
+  res.send('Collaborative Editor Server is Running')
 })
 
-/* WebSocket Server setup */
-const wss = new WebSocket.Server({ server })
+/* Database Connection */
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('✅ Connected to MongoDB Atlas'))
+  .catch((err) => console.error('❌ MongoDB Connection Error:', err))
 
 wss.on('connection', (conn, req) => {
   /* Extract document name from URL */
@@ -20,7 +35,7 @@ wss.on('connection', (conn, req) => {
 })
 
 /* Start listening */
-const port = process.env.PORT || 1234
-server.listen(port, () => {
-  console.log(`Server running at 'localhost' on port ${port}`)
+const PORT = process.env.PORT || 1234
+server.listen(PORT, () => {
+  console.log(`Server running at 'localhost' on port ${PORT}`)
 })
