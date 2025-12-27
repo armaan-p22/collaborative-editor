@@ -1,8 +1,26 @@
-import React from 'react'
+import React, { useRef } from 'react'
 
 const Toolbar = ({ editor }) => {
     if (!editor) {
         return null
+    }
+
+    const fileInputRef = useRef(null);
+
+    const handleImageUpload = (e) => {
+        const file = e.target.files[0]
+        if (file) {
+            const reader = new FileReader()
+            reader.onload = (e) => {
+                const base64String = e.target.result
+                editor.chain().focus().setImage({ src: base64String }).run()
+            }
+            reader.readAsDataURL(file)
+        }
+    }
+
+    const onImageBtnClick = () => {
+        fileInputRef.current.click()
     }
 
     const getCurrentHeading = () => {
@@ -43,6 +61,14 @@ const Toolbar = ({ editor }) => {
     
     return (
         <div className="toolbar-container">
+
+            <input 
+                type="file" 
+                ref={fileInputRef}
+                onChange={handleImageUpload}
+                accept="image/*" // Only allow images
+                style={{ display: 'none' }} // Hide it from view
+            />
 
             <select
                 value={getCurrentFont()}
@@ -152,6 +178,16 @@ const Toolbar = ({ editor }) => {
                 title="Blockquote"
             >
                 ""
+            </button>
+
+            <div className="toolbar-separator"></div>
+
+            <button
+                onClick={onImageBtnClick}
+                className="toolbar-btn"
+                title="Insert Image"
+            >
+                <span className="text-lg">🖼️</span>
             </button>
 
             <div className="toolbar-separator"></div>

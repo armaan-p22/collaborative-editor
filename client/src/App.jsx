@@ -22,6 +22,7 @@ import { LineHeight } from './extensions/LineHeight'
 import { FontSize } from './extensions/FontSize'
 import TextStyle from '@tiptap/extension-text-style'
 import FontFamily from '@tiptap/extension-font-family'
+import Image from '@tiptap/extension-image'
 
 /* Random User Generator */
 const adjectives = ['Happy', 'Cool', 'Swift', 'Chill', 'Brave', 'Smart', 'Wild']
@@ -130,6 +131,7 @@ const TiptapEditor = () => {
         },
       }) : undefined,
       /* Formatting Extensions */
+      Image,
       Highlight,
       Underline,
       LineHeight,

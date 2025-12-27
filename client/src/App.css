@@ -55,6 +55,18 @@
   width: 100%;
 }
 
+.editor-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin: 1rem 0;
+  display: block;
+}
+
+.ProseMirror img.ProseMirror-selectednode {
+  outline: 3px solid #60a5fa;
+}
+
 .ProseMirror {
   @apply outline-none;
   min-height: 100%;
