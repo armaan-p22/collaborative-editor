@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { v4 as uuidv4, validate as uuidValidate } from 'uuid'
 
 export default function Home({ user, onLogout }) {
     const navigate = useNavigate();
@@ -9,14 +8,52 @@ export default function Home({ user, onLogout }) {
     const [error, setError] = useState('')
     const [searchQuery, setSearchQuery] = useState('')
 
+    // fetch documents from database on load
     useEffect(() => {
-        const docs = JSON.parse(localStorage.getItem('recent-docs') || '[]')
-        setRecentDocs(docs)
+        document.title = 'Docs Clone'
+        const fetchDocuments = async() => {
+            const token = localStorage.getItem('auth_token')
+            if (!token) return
+
+            try {
+                const res = await fetch('http://localhost:1234/api/documents', {
+                    method: 'GET',
+                    headers: {
+                        'x-auth-token': token   // send id card
+                    }
+                })
+
+                if (!res.ok) throw new Error('Failed to fetch docs')
+                
+                const data = await res.json()
+                setRecentDocs(data)     // save database docs to state    
+
+            } catch(err) {
+                console.error("Error fetching docs:", err)
+            }
+        }
+
+        fetchDocuments()
     }, [])
     
-    const createNewDoc = () => {
-        const id = uuidv4();
-        navigate(`/documents/${id}`);
+    const createNewDoc = async () => {
+        const token = localStorage.getItem('auth_token')
+        
+        try {
+            const res = await fetch('http://localhost:1234/api/documents/create', {
+                method: 'POST',
+                headers: {
+                    'x-auth-token': token
+                }
+            })
+
+            if (!res.ok) throw new Error('Failed to create doc')
+            
+            const newDoc = await res.json()
+            navigate(`/documents/${newDoc._id}`)
+        } catch(err) {
+            setError("Could not create document. Try again.")
+        }
     }
 
     const joinDoc = (e) => {
@@ -24,16 +61,13 @@ export default function Home({ user, onLogout }) {
         setError('')
         if (!docId.trim()) return
 
-        if (!uuidValidate(docId)) {
-            setError('Invalid Document ID. It must be a valid UUID code.')
-            return
-        }
         navigate(`/documents/${docId}`)
     }
 
-    const filteredDocs = recentDocs.filter(doc => 
-        doc.id.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+    const filteredDocs = recentDocs.filter(doc => { 
+        const title = doc.title || 'Untitled'
+        return title.toLowerCase().includes(searchQuery.toLowerCase())
+    })
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4 font-sans">
@@ -98,54 +132,53 @@ export default function Home({ user, onLogout }) {
                 </form>
             </div>
 
-            {recentDocs.length > 0 && (
-                <div className="w-full max-w-6xl mt-12">
-                    <div className="flex justify-between items-end mb-4 px-2">
-                        <h2 className="text-xl font-bold text-gray-700">Recent Documents</h2>
-                        <div className="relative">
-                            <input 
-                                type="text" 
-                                placeholder="Search..." 
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-8 pr-4 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-500 w-48"
-                            />
-                            <span className="absolute left-2.5 top-1.5 text-gray-400 text-xs">🔍</span>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                        {filteredDocs.length > 0 ? (
-                            filteredDocs.map((doc) => (
-                                <div
-                                    key={doc.id}
-                                    onClick={() => navigate(`/documents/${doc.id}`)}
-                                    className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between h-32 group"
-                                >
-                                    <div className="overflow-hidden">
-                                        <div className="font-medium text-gray-800 group-hover:text-blue-600 transition-colors truncate text-base mb-1" title={doc.title || 'Untitled Document'}>
-                                            {doc.title || 'Untitled Document'}
-                                        </div>
-                                        <div className="text-xs text-gray-400 truncate">
-                                            ID: {doc.id.slice(0, 8)}...
-                                        </div>
-                                        <div className="text-xs text-gray-400 mt-1">
-                                            {doc.lastOpened}
-                                        </div>
-                                    </div>
-                                    <div className="flex justify-end">
-                                        <span className="text-gray-300 group-hover:text-blue-500 text-xl transform group-hover:translate-x-1 transition-transform">→</span>
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <div className="col-span-full text-center text-gray-400 text-sm py-8 border-2 border-dashed border-gray-200 rounded-lg">
-                                No documents match your search.
-                            </div>
-                        )}
+            
+            <div className="w-full max-w-6xl mt-12">
+                <div className="flex justify-between items-end mb-4 px-2">
+                    <h2 className="text-xl font-bold text-gray-700">Recent Documents</h2>
+                    <div className="relative">
+                        <input 
+                            type="text" 
+                            placeholder="Search..." 
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="pl-8 pr-4 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-500 w-48"
+                        />
+                        <span className="absolute left-2.5 top-1.5 text-gray-400 text-xs">🔍</span>
                     </div>
                 </div>
-            )}
+
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                    {filteredDocs.length > 0 ? (
+                        filteredDocs.map((doc) => (
+                            <div
+                                key={doc._id}
+                                onClick={() => navigate(`/documents/${doc._id}`)}
+                                className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between h-32 group"
+                            >
+                                <div className="overflow-hidden">
+                                    <div className="font-medium text-gray-800 group-hover:text-blue-600 transition-colors truncate text-base mb-1">
+                                        {doc.title || 'Untitled'}
+                                    </div>
+                                    <div className="text-xs text-gray-400 truncate">
+                                        ID: {doc._id.slice(-6)}...
+                                    </div>
+                                    <div className="text-xs text-gray-400 mt-1">
+                                        {new Date(doc.lastAccessed).toLocaleDateString()}
+                                    </div>
+                                </div>
+                                <div className="flex justify-end">
+                                    <span className="text-gray-300 group-hover:text-blue-500 text-xl transform group-hover:translate-x-1 transition-transform">→</span>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="col-span-full text-center text-gray-400 text-sm py-8 border-2 border-dashed border-gray-200 rounded-lg">
+                            No documents match your search.
+                        </div>
+                    )}
+                </div>
+            </div>
         </div>
     )
 }

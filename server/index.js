@@ -6,6 +6,7 @@ const mongoose = require('mongoose')
 const dotenv = require('dotenv')
 const cors = require('cors')
 const { setupWSConnection } = require('y-websocket/bin/utils')
+const documentRoutes = require('./routes/documents')
 
 /* Configuration */
 dotenv.config() // Load variables from .env file
@@ -19,6 +20,7 @@ app.use(express.json()) // Allow server to parse JSON bodies
 
 /* Routes */
 app.use('/api/auth', authRoutes)
+app.use('/api/documents', documentRoutes)
 
 /* Basic Route to check if server is running */
 app.get('/', (req, res) => {
