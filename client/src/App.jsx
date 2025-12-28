@@ -2,6 +2,7 @@
 import './App.css'
 import Toolbar from './Toolbar.jsx'
 import Home from './Home.jsx'
+import Login from './Login.jsx'
 import EditorHeader from './components/EditorHeader.jsx'
 import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, useParams, useNavigate } from 'react-router-dom'
@@ -24,10 +25,7 @@ import TextStyle from '@tiptap/extension-text-style'
 import FontFamily from '@tiptap/extension-font-family'
 import Image from '@tiptap/extension-image'
 
-/* Random User Generator */
-const adjectives = ['Happy', 'Cool', 'Swift', 'Chill', 'Brave', 'Smart', 'Wild']
-const animals = ['Panda', 'Tiger', 'Eagle', 'Badger', 'Fox', 'Koala', 'Hawk']
-const getRandomElement = (list) => list[Math.floor(Math.random() * list.length)]
+/* User Color Generator */
 const userColors = [
   '#2563EB',
   '#DC2626', 
@@ -40,43 +38,27 @@ const userColors = [
   '#4F46E5', 
   '#16A34A', 
 ]
+const getRandomElement = (list) => list[Math.floor(Math.random() * list.length)]
 const getRandomColor = () => getRandomElement(userColors)
 
-const getUser = () => {
-  const savedUser = localStorage.getItem('editor-user')
-  if (savedUser) {
-    return JSON.parse(savedUser)
-  }
+/* Helper: Client-side history (Local Storage) */
+const addToRecentDocuments = (id, title = 'Untitled Document') => {
+  const existing = JSON.parse(localStorage.getItem('recent-docs') || '[]')
+  const oldEntry = existing.find(doc => doc.id === id)
 
-  const newUser = {
-    name: `${getRandomElement(adjectives)} ${getRandomElement(animals)}`,
-    color: getRandomColor()
-  }
-  localStorage.setItem('editor-user', JSON.stringify(newUser))
-  return newUser
-}
-
-const currentUser = getUser()
-
-const addToRecentDocuments = (id) => {
-  const exisiting = JSON.parse(localStorage.getItem('recent-docs') || '[]')
-
-  const oldEntry = exisiting.find(doc => doc.id === id)
-
-  // create a new entry
   const newEntry = {
     id,
-    title: oldEntry ? oldEntry.title : 'Untitled Document',
+    title: oldEntry ? oldEntry.title : title,
     lastOpened: new Date().toLocaleString()
   }
 
-  const filtered = exisiting.filter(doc => doc.id !== id)
+  const filtered = existing.filter(doc => doc.id !== id)
   const updated = [newEntry, ...filtered].slice(0,10)
   localStorage.setItem('recent-docs', JSON.stringify(updated))
 }
 
 /* Main Editor Component */
-const TiptapEditor = () => {
+const TiptapEditor = ({ user }) => {
   const { id: roomID } = useParams()
   const [status, setStatus] = useState('connecting...')
   const navigate = useNavigate()
@@ -106,6 +88,7 @@ const TiptapEditor = () => {
       newProvider.off('status', handleStatus)
       newProvider.destroy()
       newYdoc.destroy()
+      newPersistence.destroy()
     }
   }, [roomID])
 
@@ -126,8 +109,8 @@ const TiptapEditor = () => {
       editorSetup ? CollaborationCursor.configure({               
         provider: editorSetup.provider,
         user: { 
-          name: currentUser.name, 
-          color: currentUser.color
+          name: user.username, 
+          color: getRandomColor()
         },
       }) : undefined,
       /* Formatting Extensions */
@@ -139,7 +122,7 @@ const TiptapEditor = () => {
       FontFamily,
       FontSize,
     ].filter(Boolean), // Remove undefined extensions
-  }, [editorSetup])
+  }, [editorSetup, user]) // Add user to dependency array
 
   /* Show loading state while connecting */
   if (!editor || !editorSetup) {
@@ -163,6 +146,7 @@ const TiptapEditor = () => {
             provider={editorSetup.provider}
             ydoc={editorSetup.ydoc}
             editor={editor}
+            currentUser={user}
           />
           <Toolbar editor={editor} />
         </div>
@@ -178,11 +162,27 @@ const TiptapEditor = () => {
 }
 
 export default function App() {
+  const [user, setUser] = useState(null)
+
+  const handleLogin = (userData, token) => {
+    setUser(userData)
+    localStorage.setItem('auth_token', token)
+  }
+
+  const handleLogout = () => {
+    setUser(null)
+    localStorage.removeItem('auth_token')
+  }
+
+  if (!user) {
+    return <Login onLogin={handleLogin} />
+  }
+
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/documents/:id" element={<TiptapEditor />} />
+        <Route path="/" element={<Home user={user} onLogout={handleLogout} />} />
+        <Route path="/documents/:id" element={<TiptapEditor user={user} />} />
       </Routes>
     </BrowserRouter>
   )

@@ -2,12 +2,11 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4, validate as uuidValidate } from 'uuid'
 
-export default function Home() {
+export default function Home({ user, onLogout }) {
     const navigate = useNavigate();
     const [docId, setDocId] = useState('');
     const [recentDocs, setRecentDocs] = useState([])
     const [error, setError] = useState('')
-
     const [searchQuery, setSearchQuery] = useState('')
 
     useEffect(() => {
@@ -26,8 +25,8 @@ export default function Home() {
         if (!docId.trim()) return
 
         if (!uuidValidate(docId)) {
-        setError('Invalid Document ID. It must be a valid UUID code.')
-        return
+            setError('Invalid Document ID. It must be a valid UUID code.')
+            return
         }
         navigate(`/documents/${docId}`)
     }
@@ -37,16 +36,33 @@ export default function Home() {
     )
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col items-center py-20 px-4">
-            <h1 className="text-4xl font-bold mb-10 text-gray-800"> 📝 Docs Clone</h1>
+        <div className="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4 font-sans">
             
-            <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+            <div className="w-full max-w-6xl flex justify-between items-center mb-12">
+                <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
+                    📝 Docs Clone
+                </h1>
                 
+                <div className="flex items-center gap-6">
+                    <div className="text-right block">
+                        <p className="text-sm text-gray-500">Signed in as</p>
+                        <p className="font-semibold text-gray-800">{user?.username}</p>
+                    </div>
+                    <button 
+                        onClick={onLogout}
+                        className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors shadow-sm text-sm font-medium"
+                    >
+                        Sign Out
+                    </button>
+                </div>
+            </div>
+
+            <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
                 <button
                     onClick={createNewDoc}
                     className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-sm flex items-center justify-center gap-2 mb-6"
                 >
-                    <span>+</span> 📄 Create New Document
+                    <span>+</span> Create New Document
                 </button>
 
                 <div className="relative flex py-2 items-center mb-4">
@@ -83,17 +99,20 @@ export default function Home() {
             </div>
 
             {recentDocs.length > 0 && (
-                <div className="w-full max-w-6xl mt-10">
-                    <h2 className="text-lg font-semibold text-gray-600 mb-4 px-2">Recent Documents</h2>
-                    
-                    <input 
-                        type="text"
-                        name="search"
-                        placeholder="🔍 Search recent docs..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full max-w-md px-4 py-2 mb-6 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-400 block"
-                    />
+                <div className="w-full max-w-6xl mt-12">
+                    <div className="flex justify-between items-end mb-4 px-2">
+                        <h2 className="text-xl font-bold text-gray-700">Recent Documents</h2>
+                        <div className="relative">
+                            <input 
+                                type="text" 
+                                placeholder="Search..." 
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="pl-8 pr-4 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-500 w-48"
+                            />
+                            <span className="absolute left-2.5 top-1.5 text-gray-400 text-xs">🔍</span>
+                        </div>
+                    </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                         {filteredDocs.length > 0 ? (
@@ -110,7 +129,7 @@ export default function Home() {
                                         <div className="text-xs text-gray-400 truncate">
                                             ID: {doc.id.slice(0, 8)}...
                                         </div>
-                                        <div className="text-xs text-gray-400">
+                                        <div className="text-xs text-gray-400 mt-1">
                                             {doc.lastOpened}
                                         </div>
                                     </div>
@@ -120,7 +139,7 @@ export default function Home() {
                                 </div>
                             ))
                         ) : (
-                            <div className="col-span-full text-center text-gray-400 text-sm py-4">
+                            <div className="col-span-full text-center text-gray-400 text-sm py-8 border-2 border-dashed border-gray-200 rounded-lg">
                                 No documents match your search.
                             </div>
                         )}

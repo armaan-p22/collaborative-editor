@@ -1,3 +1,4 @@
+const authRoutes = require('./routes/auth')
 const express = require('express')
 const http = require('http')
 const WebSocket = require('ws')
@@ -15,6 +16,9 @@ const wss = new WebSocket.Server({ server })
 /* Middleware */
 app.use(cors()) // Allow requests from different ports (frontend)
 app.use(express.json()) // Allow server to parse JSON bodies 
+
+/* Routes */
+app.use('/api/auth', authRoutes)
 
 /* Basic Route to check if server is running */
 app.get('/', (req, res) => {
