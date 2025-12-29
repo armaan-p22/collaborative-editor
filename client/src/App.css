@@ -182,6 +182,7 @@
 /* PDF EXPORT UTILITY */
 .editor-card.pdf-exporting {
   margin: 0 !important;
+  padding: 0 !important;
   box-shadow: none !important;
   border: none !important;
 }

@@ -24,13 +24,15 @@ export default function ExportMenu({ editor, title }) {
         setIsExporting(true)
         const element = document.querySelector('.editor-card')
         element.classList.add('pdf-exporting')
+        
         const opt = {
-            margin: 0,
+            margin: 1,  
             filename: `${title}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
+            html2canvas: { scale: 2, useCORS: true },
             jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
         }
+
         html2pdf().set(opt).from(element).save().then(() => {
             element.classList.remove('pdf-exporting')
             setIsExporting(false)
