@@ -3,9 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Home({ user, onLogout }) {
     const navigate = useNavigate();
-    const [docId, setDocId] = useState('');
     const [recentDocs, setRecentDocs] = useState([])
-    const [error, setError] = useState('')
     const [searchQuery, setSearchQuery] = useState('')
 
     // fetch documents from database on load
@@ -56,129 +54,106 @@ export default function Home({ user, onLogout }) {
         }
     }
 
-    const joinDoc = (e) => {
-        e.preventDefault()
-        setError('')
-        if (!docId.trim()) return
-
-        navigate(`/documents/${docId}`)
-    }
-
     const filteredDocs = recentDocs.filter(doc => { 
         const title = doc.title || 'Untitled'
         return title.toLowerCase().includes(searchQuery.toLowerCase())
     })
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4 font-sans">
+        <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
             
-            <div className="w-full max-w-6xl flex justify-between items-center mb-12">
-                <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
-                    📝 Docs Clone
-                </h1>
-                
-                <div className="flex items-center gap-6">
-                    <div className="text-right block">
-                        <p className="text-sm text-gray-500">Signed in as</p>
-                        <p className="font-semibold text-gray-800">{user?.username}</p>
+            <nav className="bg-white border-b border-gray-200 sticky top-0 z-10">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between h-16">
+                        <div className="flex items-center gap-3">
+                            <span className="text-2xl">📝</span>
+                            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
+                                Docs Clone
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <div className="hidden md:flex flex-col items-end mr-2">
+                                <span className="text-sm font-medium text-gray-900">{user?.username}</span>
+                                <span className="text-xs text-gray-500">Free Plan</span>
+                            </div>
+                            <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border border-blue-200">
+                                {user?.username?.charAt(0).toUpperCase()}
+                            </div>
+                            <button 
+                                onClick={onLogout}
+                                className="ml-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                            >
+                                Sign Out
+                            </button>
+                        </div>
                     </div>
-                    <button 
-                        onClick={onLogout}
-                        className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors shadow-sm text-sm font-medium"
+                </div>
+            </nav>
+
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                
+                <div className="mb-10">
+                    <button
+                        onClick={createNewDoc}
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg"
                     >
-                        Sign Out
+                        <span className="text-xl font-bold">+</span>
+                        <span>Create New Document</span>
                     </button>
                 </div>
-            </div>
 
-            <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
-                <button
-                    onClick={createNewDoc}
-                    className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-sm flex items-center justify-center gap-2 mb-6"
-                >
-                    <span>+</span> Create New Document
-                </button>
-
-                <div className="relative flex py-2 items-center mb-4">
-                    <div className="flex-grow border-t border-gray-200"></div>
-                    <span className="flex-shrink mx-4 text-gray-400 text-sm">OR JOIN EXISTING</span>
-                    <div className="flex-grow border-t border-gray-200"></div>
-                </div>
-
-                <form onSubmit={joinDoc} className="flex flex-col gap-2"> 
-                    <div className="flex gap-2">
-                        <input
-                            type="text"
-                            name="documentID"
-                            placeholder="Paste Document ID..."
-                            value={docId}
-                            onChange={(e) => {
-                                setDocId(e.target.value)
-                                setError('')
-                            }}
-                            className={`flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent ${
-                                error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
-                            }`}
-                        />
-                        <button
-                            type="submit"
-                            className="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors"
-                        >
-                            Join
-                        </button>
-                    </div>
-                    
-                    {error && <span className="text-red-500 text-sm ml-1">{error}</span>}
-                </form>
-            </div>
-
-            
-            <div className="w-full max-w-6xl mt-12">
-                <div className="flex justify-between items-end mb-4 px-2">
-                    <h2 className="text-xl font-bold text-gray-700">Recent Documents</h2>
+                <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <h2 className="text-2xl font-bold text-gray-800">Recent Documents</h2>
                     <div className="relative">
                         <input 
                             type="text" 
-                            placeholder="Search..." 
+                            placeholder="Search by title..." 
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-8 pr-4 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-500 w-48"
+                            className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 w-full sm:w-64 transition-all"
                         />
-                        <span className="absolute left-2.5 top-1.5 text-gray-400 text-xs">🔍</span>
+                        <span className="absolute left-3.5 top-2.5 text-gray-400">🔍</span>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {filteredDocs.length > 0 ? (
                         filteredDocs.map((doc) => (
                             <div
                                 key={doc._id}
                                 onClick={() => navigate(`/documents/${doc._id}`)}
-                                className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between h-32 group"
+                                className="group bg-white rounded-xl border border-gray-200 p-5 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col justify-between h-48 relative overflow-hidden"
                             >
-                                <div className="overflow-hidden">
-                                    <div className="font-medium text-gray-800 group-hover:text-blue-600 transition-colors truncate text-base mb-1">
+                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                
+                                <div>
+                                    <div className="flex justify-between items-start mb-3">
+                                        <div className="p-2 bg-blue-50 rounded-lg text-2xl">📄</div>
+                                    </div>
+                                    <h3 className="font-semibold text-gray-800 text-lg truncate mb-1 group-hover:text-blue-600 transition-colors">
                                         {doc.title || 'Untitled'}
-                                    </div>
-                                    <div className="text-xs text-gray-400 truncate">
-                                        ID: {doc._id.slice(-6)}...
-                                    </div>
-                                    <div className="text-xs text-gray-400 mt-1">
-                                        {new Date(doc.lastAccessed).toLocaleDateString()}
-                                    </div>
+                                    </h3>
                                 </div>
-                                <div className="flex justify-end">
-                                    <span className="text-gray-300 group-hover:text-blue-500 text-xl transform group-hover:translate-x-1 transition-transform">→</span>
+
+                                <div className="pt-4 border-t border-gray-100 flex justify-between items-center mt-auto">
+                                    <span className="text-xs text-gray-500">
+                                        Last opened: {new Date(doc.lastAccessed).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                    </span>
+                                    <div className="h-6 w-6 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                        →
+                                    </div>
                                 </div>
                             </div>
                         ))
                     ) : (
-                        <div className="col-span-full text-center text-gray-400 text-sm py-8 border-2 border-dashed border-gray-200 rounded-lg">
-                            No documents match your search.
+                        <div className="col-span-full py-16 text-center bg-white rounded-xl border-2 border-dashed border-gray-200">
+                            <div className="text-4xl mb-4">📭</div>
+                            <h3 className="text-lg font-medium text-gray-900">No documents found</h3>
+                            <p className="text-gray-500">Create a new one to get started!</p>
                         </div>
                     )}
                 </div>
-            </div>
+            </main>
         </div>
     )
 }

@@ -8,13 +8,16 @@ export default function Login({ onLogin }) {
     const [confirmPassword, setConfirmPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
     const [error, setError] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
 
     const handleSubmit = async (e) => {
         e.preventDefault()
         setError('')
+        setIsLoading(true)
 
         if (isRegistering && password !== confirmPassword) {
             setError("Passwords do not match")
+            setIsLoading(false)
             return
         }
 
@@ -41,102 +44,133 @@ export default function Login({ onLogin }) {
             
         } catch (err) {
             setError(err.message)
+        } finally {
+            setIsLoading(false)
         }
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 font-sans">
-            <div className="bg-white p-8 rounded-lg shadow-md w-96">
-                <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
-                    {isRegistering ? 'Create Account' : 'Welcome Back'}
-                </h2>
-
-                {error && (
-                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4 text-sm">
-                        {error}
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 font-sans p-4">
+            <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                <div className="p-8">
+                    <div className="text-center mb-8">
+                        <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-blue-100 text-blue-600 mb-4">
+                            <span className="text-2xl">📝</span>
+                        </div>
+                        <h2 className="text-2xl font-bold text-gray-900">
+                            {isRegistering ? 'Create an Account' : 'Welcome Back'}
+                        </h2>
+                        <p className="text-gray-500 text-sm mt-2">
+                            {isRegistering ? 'Start collaborating in seconds' : 'Enter your details to access your docs'}
+                        </p>
                     </div>
-                )}
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    {isRegistering && (
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Username</label>
-                            <input 
-                                type="text"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                required 
-                            />
+                    {error && (
+                        <div className="mb-6 p-4 rounded-lg bg-red-50 border border-red-100 flex items-start gap-3">
+                            <span className="text-red-500 mt-0.5">⚠️</span>
+                            <p className="text-sm text-red-700 font-medium">{error}</p>
                         </div>
                     )}
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Email</label>
-                        <input 
-                            type="email" 
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
-                            required
-                        />
-                    </div>
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        {isRegistering && (
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Username</label>
+                                <input 
+                                    type="text"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block transition-all"
+                                    placeholder="johndoe"
+                                    required 
+                                />
+                            </div>
+                        )}
 
-                    <div className="relative">
-                        <label className="block text-sm font-medium text-gray-700">Password</label>
-                        <div className="relative mt-1">
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Email Address</label>
                             <input 
-                                type={showPassword ? "text" : "password"}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 pr-10" 
+                                type="email" 
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block transition-all" 
+                                placeholder="name@company.com"
                                 required
                             />
-                            <button 
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute inset-y-0 right-0 px-3 flex items-center text-sm leading-5 text-gray-500 hover:text-gray-700 focus:outline-none"
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Password</label>
+                            <div className="relative">
+                                <input 
+                                    type={showPassword ? "text" : "password"}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block transition-all pr-12" 
+                                    placeholder="••••••••"
+                                    required
+                                />
+                                <button 
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute inset-y-0 right-0 px-3 flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 focus:outline-none"
+                                >
+                                    {showPassword ? "Hide" : "Show"}
+                                </button>
+                            </div>
+                        </div>
+
+                        {isRegistering && (
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Confirm Password</label>
+                                <input 
+                                    type={showPassword ? "text" : "password"}
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block transition-all" 
+                                    placeholder="••••••••"
+                                    required
+                                />
+                            </div>
+                        )}
+
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className={`w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                        >
+                            {isLoading ? 'Processing...' : (isRegistering ? 'Create Account' : 'Sign In')}
+                        </button>
+                    </form>
+
+                    <div className="mt-6">
+                        <div className="relative">
+                            <div className="absolute inset-0 flex items-center">
+                                <div className="w-full border-t border-gray-200"></div>
+                            </div>
+                            <div className="relative flex justify-center text-sm">
+                                <span className="px-2 bg-white text-gray-500">
+                                    {isRegistering ? 'Already have an account?' : 'New to Docs Clone?'}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="mt-6 text-center">
+                            <button
+                                onClick={() => {
+                                    setIsRegistering(!isRegistering)
+                                    setError('')
+                                    setUsername('') 
+                                    setEmail('')
+                                    setPassword('')
+                                    setConfirmPassword('')
+                                }}
+                                className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
                             >
-                                {showPassword ? "Hide" : "Show"}
+                                {isRegistering ? 'Sign in instead' : 'Create an account'}
                             </button>
                         </div>
                     </div>
-
-                    {isRegistering && (
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
-                            <input 
-                                type={showPassword ? "text" : "password"} // Also respects the show/hide toggle
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
-                                required
-                            />
-                        </div>
-                    )}
-
-                    <button
-                        type="submit"
-                        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                    >
-                        {isRegistering ? 'Sign Up' : 'Sign In'}
-                    </button>
-                </form>
-
-                <div className="mt-4 text-center">
-                    <button
-                        onClick={() => {
-                            setIsRegistering(!isRegistering)
-                            setError('')
-                            setUsername('') 
-                            setEmail('')
-                            setPassword('')
-                            setConfirmPassword('')
-                        }}
-                        className="text-sm text-blue-600 hover:text-blue-500"
-                    >
-                        {isRegistering ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
-                    </button>
                 </div>
             </div>
         </div>

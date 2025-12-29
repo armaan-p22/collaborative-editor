@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import CopyButton from './CopyButton'
 import Avatars from './Avatars'
 import ExportMenu from './ExportMenu'
 import ShareModal from './ShareModal'
@@ -11,7 +10,7 @@ const EditorHeader = ({ roomID, status, onBack, provider, ydoc, editor }) => {
   const inputRef = useRef(null)
 
   useEffect(() => {
-    const fetchTitle = async () => {
+    const fetchTitleAndTouch = async () => {
       const token = localStorage.getItem('auth_token')
       if (!token) return
 
@@ -28,12 +27,24 @@ const EditorHeader = ({ roomID, status, onBack, provider, ydoc, editor }) => {
                  document.title = currentDoc.title
              }
          }
+
+         if (title !== "Loading...") {
+             await fetch(`http://localhost:1234/api/documents/update/${roomID}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-auth-token': token
+                },
+                body: JSON.stringify({ title: title })
+             })
+         }
+
       } catch (err) {
          console.error("Error fetching title:", err)
       }
     }
 
-    fetchTitle()
+    fetchTitleAndTouch()
   }, [roomID])
 
   const saveTitle = async () => {
@@ -85,8 +96,7 @@ const EditorHeader = ({ roomID, status, onBack, provider, ydoc, editor }) => {
             placeholder="Untitled Document"
             className="text-xl font-bold text-gray-800 border border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none rounded px-2 py-0.5 -ml-2 transition-colors w-64 truncate bg-transparent placeholder-gray-400"
           />
-          <div className="text-xs text-gray-400 pl-1 flex items-center gap-2">
-              <span>ID: {roomID.slice(0, 8)}...</span>
+          <div className="text-xs text-gray-400 pl-1 h-4">
               {isSaving && <span className="text-blue-500 animate-pulse">Syncing...</span>}
           </div>
         </div>
@@ -95,11 +105,10 @@ const EditorHeader = ({ roomID, status, onBack, provider, ydoc, editor }) => {
            <ExportMenu editor={editor} title={title} />
            <button
             onClick={() => setShowShare(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center gap-1"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center gap-1 shadow-sm"
            >
             <span>👤+</span> Share
            </button>
-           <CopyButton />
         </div>
       </div>
 
