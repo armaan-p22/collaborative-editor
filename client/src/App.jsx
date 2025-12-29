@@ -162,16 +162,21 @@ const TiptapEditor = ({ user }) => {
 }
 
 export default function App() {
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem('user_info')
+    return savedUser ? JSON.parse(savedUser) : null
+  })
 
   const handleLogin = (userData, token) => {
     setUser(userData)
     localStorage.setItem('auth_token', token)
+    localStorage.setItem('user_info', JSON.stringify(userData))
   }
 
   const handleLogout = () => {
     setUser(null)
     localStorage.removeItem('auth_token')
+    localStorage.removeItem('user_info')
   }
 
   if (!user) {
