@@ -25,7 +25,6 @@ import TextStyle from '@tiptap/extension-text-style'
 import FontFamily from '@tiptap/extension-font-family'
 import Image from '@tiptap/extension-image'
 
-/* User Color Generator */
 const userColors = [
   '#2563EB',
   '#DC2626', 
@@ -41,7 +40,6 @@ const userColors = [
 const getRandomElement = (list) => list[Math.floor(Math.random() * list.length)]
 const getRandomColor = () => getRandomElement(userColors)
 
-/* Helper: Client-side history (Local Storage) */
 const addToRecentDocuments = (id, title = 'Untitled Document') => {
   const existing = JSON.parse(localStorage.getItem('recent-docs') || '[]')
   const oldEntry = existing.find(doc => doc.id === id)
@@ -57,7 +55,6 @@ const addToRecentDocuments = (id, title = 'Untitled Document') => {
   localStorage.setItem('recent-docs', JSON.stringify(updated))
 }
 
-/* Main Editor Component */
 const TiptapEditor = ({ user }) => {
   const { id: roomID } = useParams()
   const [status, setStatus] = useState('connecting...')
@@ -65,25 +62,19 @@ const TiptapEditor = ({ user }) => {
   
   const [editorSetup, setEditorSetup] = useState(null)
 
-  /* Setup Yjs Provider & WebSocket connection */
   useEffect(() => {
-    // save to history
     addToRecentDocuments(roomID)
-    /* Create fresh Yjs document and provider */
     const newYdoc = new Y.Doc()
     const newProvider = new WebsocketProvider('ws://localhost:1234', roomID, newYdoc)
     const newPersistence = new IndexeddbPersistence(roomID, newYdoc)
 
-    /* Monitor connection status */
     const handleStatus = (event) => {
       setStatus(event.status)
     }
     newProvider.on('status', handleStatus)
 
-    /* Store instance in state */
     setEditorSetup({ ydoc: newYdoc, provider: newProvider })
 
-    /* Cleanup on unmount */
     return () => {
       newProvider.off('status', handleStatus)
       newProvider.destroy()
@@ -92,19 +83,18 @@ const TiptapEditor = ({ user }) => {
     }
   }, [roomID])
 
-  /* Configure Tiptap Editor */
   const editor = useEditor({
-    editable: !!editorSetup, // Disable editing until provider is ready
+    editable: !!editorSetup, 
     extensions: [
       StarterKit.configure({ 
-        history: false, // Let Yjs handle history
+        history: false, 
         blockquote: {
           HTMLAttributes: {
             class: 'border-l-4 border-gray-300 pl-4 italic',
           },
         }, 
       }),
-      /* Only enable collaboration extensions when provider exists */
+
       editorSetup ? Collaboration.configure({ document: editorSetup.ydoc }) : undefined,
       editorSetup ? CollaborationCursor.configure({               
         provider: editorSetup.provider,
@@ -113,7 +103,7 @@ const TiptapEditor = ({ user }) => {
           color: getRandomColor()
         },
       }) : undefined,
-      /* Formatting Extensions */
+
       Image,
       Highlight,
       Underline,
@@ -121,10 +111,9 @@ const TiptapEditor = ({ user }) => {
       TextStyle,
       FontFamily,
       FontSize,
-    ].filter(Boolean), // Remove undefined extensions
-  }, [editorSetup, user]) // Add user to dependency array
+    ].filter(Boolean), 
+  }, [editorSetup, user]) 
 
-  /* Show loading state while connecting */
   if (!editor || !editorSetup) {
     return (
       <div className="editor-card flex items-center justify-center min-h-[400px]">
@@ -133,7 +122,6 @@ const TiptapEditor = ({ user }) => {
     )
   }
 
-  /* Render Editor UI */
   return (
     <div className="flex flex-col h-screen bg-[#F3F4F6] print-layout">
       

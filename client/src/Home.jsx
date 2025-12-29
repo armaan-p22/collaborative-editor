@@ -6,7 +6,6 @@ export default function Home({ user, onLogout }) {
     const [recentDocs, setRecentDocs] = useState([])
     const [searchQuery, setSearchQuery] = useState('')
 
-    // fetch documents from database on load
     useEffect(() => {
         document.title = 'Docs Clone'
         const fetchDocuments = async() => {
@@ -17,14 +16,14 @@ export default function Home({ user, onLogout }) {
                 const res = await fetch('http://localhost:1234/api/documents', {
                     method: 'GET',
                     headers: {
-                        'x-auth-token': token   // send id card
+                        'x-auth-token': token   
                     }
                 })
 
                 if (!res.ok) throw new Error('Failed to fetch docs')
                 
                 const data = await res.json()
-                setRecentDocs(data)     // save database docs to state    
+                setRecentDocs(data)         
 
             } catch(err) {
                 console.error("Error fetching docs:", err)

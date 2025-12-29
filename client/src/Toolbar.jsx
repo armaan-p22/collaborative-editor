@@ -66,8 +66,8 @@ const Toolbar = ({ editor }) => {
                 type="file" 
                 ref={fileInputRef}
                 onChange={handleImageUpload}
-                accept="image/*" // Only allow images
-                style={{ display: 'none' }} // Hide it from view
+                accept="image/*"
+                style={{ display: 'none' }}
             />
 
             <select
@@ -88,7 +88,7 @@ const Toolbar = ({ editor }) => {
             <select
                 value={getCurrentFontSize()}
                 onChange={(e) => editor.chain().focus().setFontSize(e.target.value).run()}
-                className="toolbar-select w-16" // Narrow width
+                className="toolbar-select w-16"
                 title="Font Size"
             >
                 <option value="12">12</option>

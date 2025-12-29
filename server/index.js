@@ -9,20 +9,19 @@ const { setupWSConnection } = require('y-websocket/bin/utils')
 const documentRoutes = require('./routes/documents')
 
 /* Configuration */
-dotenv.config() // Load variables from .env file
+dotenv.config() 
 const app = express()
 const server = http.createServer(app)
 const wss = new WebSocket.Server({ server })
 
 /* Middleware */
-app.use(cors()) // Allow requests from different ports (frontend)
-app.use(express.json()) // Allow server to parse JSON bodies 
+app.use(cors()) 
+app.use(express.json()) 
 
 /* Routes */
 app.use('/api/auth', authRoutes)
 app.use('/api/documents', documentRoutes)
 
-/* Basic Route to check if server is running */
 app.get('/', (req, res) => {
   res.send('Collaborative Editor Server is Running')
 })
@@ -33,10 +32,8 @@ mongoose.connect(process.env.MONGO_URI)
   .catch((err) => console.error('❌ MongoDB Connection Error:', err))
 
 wss.on('connection', (conn, req) => {
-  /* Extract document name from URL */
   const docName = req.url.slice(1).split('?')[0]
   
-  /* Hand off connection to Yjs logic */
   setupWSConnection(conn, req, { docName })
 })
 
