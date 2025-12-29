@@ -15,6 +15,7 @@ import CollaborationCursor from '@tiptap/extension-collaboration-cursor'
 import * as Y from 'yjs'
 import { WebsocketProvider } from 'y-websocket'
 import { IndexeddbPersistence } from 'y-indexeddb'
+import { WS_URL } from './config'
 
 /* Extension Imports */
 import Highlight from '@tiptap/extension-highlight'
@@ -65,7 +66,7 @@ const TiptapEditor = ({ user }) => {
   useEffect(() => {
     addToRecentDocuments(roomID)
     const newYdoc = new Y.Doc()
-    const newProvider = new WebsocketProvider('ws://localhost:1234', roomID, newYdoc)
+    const newProvider = new WebsocketProvider(WS_URL, roomID, newYdoc)
     const newPersistence = new IndexeddbPersistence(roomID, newYdoc)
 
     const handleStatus = (event) => {

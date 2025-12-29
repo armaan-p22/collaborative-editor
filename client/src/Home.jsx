@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from './config';
 
 export default function Home({ user, onLogout }) {
     const navigate = useNavigate();
@@ -13,7 +14,7 @@ export default function Home({ user, onLogout }) {
             if (!token) return
 
             try {
-                const res = await fetch('http://localhost:1234/api/documents', {
+                const res = await fetch(`${API_URL}/api/documents`, {
                     method: 'GET',
                     headers: {
                         'x-auth-token': token   
@@ -37,7 +38,7 @@ export default function Home({ user, onLogout }) {
         const token = localStorage.getItem('auth_token')
         
         try {
-            const res = await fetch('http://localhost:1234/api/documents/create', {
+            const res = await fetch(`${API_URL}/api/documents/create`, {
                 method: 'POST',
                 headers: {
                     'x-auth-token': token

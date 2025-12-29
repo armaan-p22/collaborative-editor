@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import Avatars from './Avatars'
 import ExportMenu from './ExportMenu'
 import ShareModal from './ShareModal'
+import { API_URL } from '../config'
 
 const EditorHeader = ({ roomID, status, onBack, provider, ydoc, editor }) => {
   const [title, setTitle] = useState("Loading...")
@@ -15,7 +16,7 @@ const EditorHeader = ({ roomID, status, onBack, provider, ydoc, editor }) => {
       if (!token) return
 
       try {
-         const res = await fetch('http://localhost:1234/api/documents', {
+         const res = await fetch(`${API_URL}/api/documents`, {
             headers: { 'x-auth-token': token }
          })
          
@@ -29,7 +30,7 @@ const EditorHeader = ({ roomID, status, onBack, provider, ydoc, editor }) => {
          }
 
          if (title !== "Loading...") {
-             await fetch(`http://localhost:1234/api/documents/update/${roomID}`, {
+             await fetch(`${API_URL}/api/documents/update/${roomID}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -54,7 +55,7 @@ const EditorHeader = ({ roomID, status, onBack, provider, ydoc, editor }) => {
       const token = localStorage.getItem('auth_token')
 
       try {
-          await fetch(`http://localhost:1234/api/documents/update/${roomID}`, {
+          await fetch(`${API_URL}/api/documents/update/${roomID}`, {
               method: 'PUT',
               headers: {
                   'Content-Type': 'application/json',

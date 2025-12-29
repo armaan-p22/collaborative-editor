@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { API_URL } from '../config'
 
 export default function ShareModal({ isOpen, onClose, roomID }) {
     const [email, setEmail] = useState('')
@@ -17,7 +18,7 @@ export default function ShareModal({ isOpen, onClose, roomID }) {
         const token = localStorage.getItem('auth_token')
 
         try {
-            const res = await fetch(`http://localhost:1234/api/documents/share/${roomID}`, {
+            const res = await fetch(`${API_URL}/api/documents/share/${roomID}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
