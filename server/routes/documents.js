@@ -4,6 +4,7 @@ const Document = require('../models/Document')
 const User = require('../models/User')
 const jwt = require('jsonwebtoken')
 
+// check if users logged in
 const auth = (req, res, next) => {
     const token = req.header('x-auth-token')
     if (!token) return res.status(401).json({message: 'No token, authorization denied'})
@@ -17,6 +18,7 @@ const auth = (req, res, next) => {
     }
 }
 
+// create document
 router.post('/create', auth, async (req, res) => {
     try {
         const newDoc = new Document({
@@ -32,6 +34,7 @@ router.post('/create', auth, async (req, res) => {
     }
 })
 
+// get users document
 router.get('/', auth, async (req, res) => {
     try {
         const docs = await Document.find({
@@ -47,6 +50,7 @@ router.get('/', auth, async (req, res) => {
     }
 })
 
+// update document title
 router.put('/update/:id', auth, async (req, res) => {
     try {
         const { title } = req.body
@@ -69,6 +73,41 @@ router.put('/update/:id', auth, async (req, res) => {
 
     } catch (err) {
         res.status(500).json({ message: err.message })
+    }
+})
+
+// share document
+router.post('/share/:id', auth, async (req, res) => {
+    try {
+        const {email} = req.body
+
+        const doc = await Document.findById(req.params.id)
+        if (!doc) return res.status(404).json({message: 'Document not found'})
+
+        if (doc.owner.toString() !== req.user.id) {
+            return res.status(401).json({message: 'Only the owner can share this document'})
+        }
+
+        const userToShare = await User.findOne({email})
+        if (!userToShare) {
+            return res.status(404).json({message: 'User not found. They must register first.'})
+        }
+
+        if (userToShare._id.toString() === req.user.id) {
+            return res.status(400).json({message: 'You already own this document'})
+        }
+
+        if (doc.collaborators.includes(userToShare._id)) {
+            return res.status(400).json({message: 'User is already a collaborator'})
+        }
+
+        doc.collaborators.push(userToShare._id)
+        await doc.save()
+
+        res.json({message: `Successfully shared with ${userToShare.username}`})
+
+    } catch(err) {
+        res.status(500).json({message: err.message})
     }
 })
 

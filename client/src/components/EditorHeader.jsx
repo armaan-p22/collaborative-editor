@@ -2,10 +2,12 @@ import { useState, useEffect, useRef } from 'react'
 import CopyButton from './CopyButton'
 import Avatars from './Avatars'
 import ExportMenu from './ExportMenu'
+import ShareModal from './ShareModal'
 
 const EditorHeader = ({ roomID, status, onBack, provider, ydoc, editor }) => {
   const [title, setTitle] = useState("Loading...")
-  const [isSaving, setIsSaving] = useState(false) // New state for visual feedback
+  const [isSaving, setIsSaving] = useState(false)
+  const [showShare, setShowShare] = useState(false)
   const inputRef = useRef(null)
 
   useEffect(() => {
@@ -91,6 +93,12 @@ const EditorHeader = ({ roomID, status, onBack, provider, ydoc, editor }) => {
 
         <div className="flex items-center gap-2">
            <ExportMenu editor={editor} title={title} />
+           <button
+            onClick={() => setShowShare(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center gap-1"
+           >
+            <span>👤+</span> Share
+           </button>
            <CopyButton />
         </div>
       </div>
@@ -112,6 +120,12 @@ const EditorHeader = ({ roomID, status, onBack, provider, ydoc, editor }) => {
           
         </div>
       </div>
+
+      <ShareModal
+        isOpen={showShare}
+        onClose={() => setShowShare(false)}
+        roomID={roomID}
+      />
     </div>
   )
 }
