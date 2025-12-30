@@ -8,6 +8,7 @@ A full-stack, real-time collaborative text editor that allows multiple users to 
 
 🔗 **[View Live Demo](https://collaborative-editor-pearl-ten.vercel.app/)**
 
+<img width="1919" height="865" alt="Screenshot 2025-12-29 192421" src="https://github.com/user-attachments/assets/92f69132-cb0f-4b5c-9495-a1bfdd4bfd89" />
 
 ## ✨ Key Features
 
